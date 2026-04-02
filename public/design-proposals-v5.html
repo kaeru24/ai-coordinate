@@ -1,0 +1,1714 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MyCloset — Design Proposal v5 "Capsule Noir"</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+/* ─────────────────────────────────────────────
+   RESET
+───────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ─────────────────────────────────────────────
+   DESIGN TOKENS
+───────────────────────────────────────────── */
+:root {
+  --bg:          #FDFCF8;
+  --surface:     #F4F3EE;
+  --surface2:    #ECEAE3;
+  --border:      #E2DFD7;
+  --ink:         #1A1918;
+  --ink2:        #8A8880;
+  --ink3:        #B5B3AC;
+  --gold:        #C9A96E;
+  --gold-soft:   rgba(201,169,110,0.14);
+  --action:      #1A1918;
+  --action-fg:   #FDFCF8;
+  --sage-bg:     #E6EFEA;
+  --sage:        #2A6041;
+  --terra-bg:    #F5EDE4;
+  --terra:       #8B4513;
+  --lav-bg:      #EAE6F4;
+  --lav:         #4B3B8C;
+  --r-sm:        8px;
+  --r-md:        14px;
+  --r-lg:        20px;
+  --r-xl:        28px;
+  --shadow-card: 0 2px 8px rgba(26,25,24,0.05), 0 1px 2px rgba(26,25,24,0.06);
+  --shadow-md:   0 4px 20px rgba(26,25,24,0.10);
+  --font:        'Noto Sans JP', 'Hiragino Kaku Gothic ProN', system-ui, sans-serif;
+}
+
+/* ─────────────────────────────────────────────
+   SHOWCASE LAYOUT
+───────────────────────────────────────────── */
+body {
+  font-family: var(--font);
+  background: #0E0D0B;
+  color: #FDFCF8;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+.showcase {
+  max-width: 1800px;
+  margin: 0 auto;
+  padding: 0 48px 80px;
+}
+
+/* ─────────────────────────────────────────────
+   SHOWCASE HEADER
+───────────────────────────────────────────── */
+.showcase-header {
+  padding: 72px 0 56px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  margin-bottom: 64px;
+}
+.eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+.showcase-title {
+  font-size: 56px;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  color: #FDFCF8;
+  line-height: 1;
+}
+.showcase-sub {
+  font-size: 16px;
+  color: rgba(253,252,248,0.45);
+  font-weight: 400;
+  letter-spacing: 0.01em;
+}
+.tagline-badge {
+  margin-top: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(201,169,110,0.12);
+  border: 1px solid rgba(201,169,110,0.3);
+  border-radius: 100px;
+  padding: 6px 16px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--gold);
+}
+.tagline-badge::before {
+  content: '';
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--gold);
+}
+
+/* ─────────────────────────────────────────────
+   SECTION LABELS
+───────────────────────────────────────────── */
+.section-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(253,252,248,0.3);
+  margin-bottom: 28px;
+}
+
+/* ─────────────────────────────────────────────
+   PHONES ROW
+───────────────────────────────────────────── */
+.phones-section { margin-bottom: 88px; }
+.phones-row {
+  display: flex;
+  gap: 32px;
+  align-items: flex-start;
+  overflow-x: auto;
+  padding-bottom: 24px;
+}
+.phones-row::-webkit-scrollbar { height: 4px; }
+.phones-row::-webkit-scrollbar-track { background: rgba(255,255,255,0.04); border-radius: 4px; }
+.phones-row::-webkit-scrollbar-thumb { background: rgba(201,169,110,0.4); border-radius: 4px; }
+
+.phone-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  flex-shrink: 0;
+}
+.phone-number {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(253,252,248,0.25);
+}
+.phone-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: rgba(253,252,248,0.7);
+  letter-spacing: -0.01em;
+}
+
+/* ─────────────────────────────────────────────
+   PHONE FRAME (iPhone 15 Pro proportions)
+───────────────────────────────────────────── */
+.phone {
+  width: 275px;
+  height: 596px;
+  border-radius: 48px;
+  background: var(--bg);
+  position: relative;
+  overflow: hidden;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.06),
+    0 0 0 9px #2C2925,
+    0 0 0 10px rgba(255,255,255,0.04),
+    0 40px 100px rgba(0,0,0,0.6),
+    0 0 0 10.5px #1A1715;
+  flex-shrink: 0;
+}
+
+/* Dynamic Island */
+.phone::before {
+  content: '';
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px; height: 26px;
+  background: #0E0D0B;
+  border-radius: 14px;
+  z-index: 200;
+}
+
+/* ─────────────────────────────────────────────
+   STATUS BAR
+───────────────────────────────────────────── */
+.status-bar {
+  position: relative;
+  z-index: 100;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 22px 0;
+  height: 50px;
+}
+.status-time {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+  letter-spacing: -0.02em;
+}
+.status-icons {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.status-icons span {
+  font-size: 13px;
+  color: var(--ink);
+}
+
+/* ─────────────────────────────────────────────
+   SCREEN CONTENT
+───────────────────────────────────────────── */
+.screen {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.screen-content {
+  flex: 1;
+  overflow: hidden;
+  padding: 0 16px;
+}
+
+/* ─────────────────────────────────────────────
+   BOTTOM NAV (shared)
+───────────────────────────────────────────── */
+.bottom-nav {
+  background: var(--bg);
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: stretch;
+  padding: 4px 0 12px;
+  gap: 0;
+  flex-shrink: 0;
+}
+.nav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 6px 0 0;
+  cursor: pointer;
+}
+.nav-icon {
+  font-size: 18px;
+  line-height: 1;
+}
+.nav-label {
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: var(--ink3);
+}
+.nav-item.active .nav-label { color: var(--ink); }
+.nav-dot {
+  width: 4px; height: 4px;
+  border-radius: 50%;
+  background: var(--gold);
+  margin-top: 2px;
+}
+.nav-dot-spacer {
+  width: 4px; height: 4px;
+  margin-top: 2px;
+}
+
+/* ─────────────────────────────────────────────
+   PAGE HEADER
+───────────────────────────────────────────── */
+.page-header {
+  padding: 12px 16px 14px;
+  flex-shrink: 0;
+}
+.page-title {
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+  line-height: 1.1;
+}
+.page-subtitle {
+  font-size: 12px;
+  color: var(--ink3);
+  margin-top: 2px;
+  font-weight: 400;
+}
+.gold-rule {
+  width: 28px; height: 2px;
+  background: var(--gold);
+  border-radius: 2px;
+  margin-top: 8px;
+}
+
+/* ─────────────────────────────────────────────
+   HOME PAGE
+───────────────────────────────────────────── */
+.home-header {
+  padding: 8px 16px 16px;
+  flex-shrink: 0;
+}
+.lettermark-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+.lettermark {
+  width: 36px; height: 36px;
+  background: var(--ink);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 900;
+  color: var(--bg);
+  letter-spacing: -0.05em;
+  flex-shrink: 0;
+}
+.app-name {
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  color: var(--ink);
+}
+.app-tagline {
+  font-size: 11px;
+  color: var(--ink3);
+  margin-left: 46px;
+}
+
+.stats-row {
+  display: flex;
+  gap: 8px;
+  margin: 14px 0;
+}
+.stat-block {
+  flex: 1;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 14px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.stat-num {
+  font-size: 32px;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  color: var(--ink);
+  line-height: 1;
+}
+.stat-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink3);
+}
+
+.nav-cards { display: flex; flex-direction: column; gap: 8px; }
+.nav-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: var(--shadow-card);
+}
+.nav-card-icon {
+  width: 40px; height: 40px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+.nav-card-text { flex: 1; min-width: 0; }
+.nav-card-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+}
+.nav-card-desc {
+  font-size: 10px;
+  color: var(--ink3);
+  margin-top: 1px;
+}
+.nav-card-count {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--gold);
+}
+.nav-card-arrow {
+  font-size: 16px;
+  color: var(--ink3);
+  font-weight: 300;
+}
+
+/* ─────────────────────────────────────────────
+   REGISTER PAGE
+───────────────────────────────────────────── */
+.upload-area {
+  border: 1.5px dashed var(--border);
+  background: var(--surface);
+  border-radius: var(--r-lg);
+  height: 170px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.upload-icon {
+  width: 48px; height: 48px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+}
+.upload-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.upload-sub {
+  font-size: 10px;
+  color: var(--ink3);
+}
+
+.field-wrap {
+  position: relative;
+  margin-bottom: 12px;
+}
+.field-label-float {
+  position: absolute;
+  top: -8px;
+  left: 12px;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--ink2);
+  letter-spacing: 0.04em;
+  background: var(--bg);
+  padding: 0 4px;
+  text-transform: uppercase;
+}
+.field-input {
+  width: 100%;
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 13px 14px;
+  font-size: 13px;
+  font-family: var(--font);
+  color: var(--ink);
+  background: var(--bg);
+  outline: none;
+}
+
+.cat-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.cat-btn {
+  flex: 1;
+  padding: 11px 0;
+  border-radius: var(--r-md);
+  font-size: 12px;
+  font-weight: 700;
+  border: 1.5px solid var(--border);
+  background: var(--surface);
+  color: var(--ink2);
+  text-align: center;
+  cursor: pointer;
+}
+.cat-btn.active-top {
+  background: var(--sage-bg);
+  color: var(--sage);
+  border-color: var(--sage);
+}
+.cat-btn.active-bottom {
+  background: var(--terra-bg);
+  color: var(--terra);
+  border-color: var(--terra);
+}
+
+.btn-primary {
+  width: 100%;
+  padding: 16px 0;
+  background: var(--action);
+  color: var(--action-fg);
+  border: none;
+  border-radius: var(--r-lg);
+  font-size: 14px;
+  font-weight: 700;
+  font-family: var(--font);
+  letter-spacing: -0.01em;
+  cursor: pointer;
+}
+.btn-primary:disabled {
+  background: var(--surface2);
+  color: var(--ink3);
+}
+
+/* ─────────────────────────────────────────────
+   CLOSET PAGE
+───────────────────────────────────────────── */
+.filter-row {
+  display: flex;
+  gap: 6px;
+  padding: 0 0 14px;
+  overflow-x: auto;
+  flex-shrink: 0;
+}
+.filter-row::-webkit-scrollbar { display: none; }
+.chip {
+  padding: 7px 13px;
+  border-radius: 100px;
+  font-size: 11px;
+  font-weight: 700;
+  border: 1.5px solid var(--border);
+  background: var(--surface);
+  color: var(--ink2);
+  white-space: nowrap;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.chip.active-all {
+  background: var(--ink);
+  color: var(--bg);
+  border-color: var(--ink);
+}
+.chip.active-top {
+  background: var(--sage-bg);
+  color: var(--sage);
+  border-color: var(--sage);
+}
+.chip.active-bottom {
+  background: var(--terra-bg);
+  color: var(--terra);
+  border-color: var(--terra);
+}
+.chip.active-coord {
+  background: var(--lav-bg);
+  color: var(--lav);
+  border-color: var(--lav);
+}
+
+.clothes-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  overflow: hidden;
+}
+.clothing-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+}
+.clothing-card.selected {
+  border: 2px solid var(--gold);
+  box-shadow: 0 0 0 3px var(--gold-soft), var(--shadow-card);
+}
+.clothing-img {
+  width: 100%;
+  aspect-ratio: 1;
+  position: relative;
+  overflow: hidden;
+}
+.clothing-img-inner {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.check-badge {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 20px; height: 20px;
+  background: var(--gold);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  color: white;
+  font-weight: 700;
+}
+.clothing-info {
+  padding: 8px 10px 9px;
+}
+.clothing-name {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cat-badge {
+  display: inline-block;
+  padding: 2px 7px;
+  border-radius: 100px;
+  font-size: 9px;
+  font-weight: 700;
+}
+.cat-badge.top { background: var(--sage-bg); color: var(--sage); }
+.cat-badge.bottom { background: var(--terra-bg); color: var(--terra); }
+.cat-badge.coord { background: var(--lav-bg); color: var(--lav); }
+
+/* Clothing image placeholders */
+.cloth-1 { background: linear-gradient(135deg, #E8E4DC, #D8D3C8); }
+.cloth-2 { background: linear-gradient(135deg, #DDE4E8, #C8D4DA); }
+.cloth-3 { background: linear-gradient(135deg, #E8DDE4, #D8C8D0); }
+.cloth-4 { background: linear-gradient(135deg, #E4E8DD, #D4DAC8); }
+.cloth-5 { background: linear-gradient(135deg, #E8E0D8, #D8C8BC); }
+.cloth-6 { background: linear-gradient(135deg, #DDE0E8, #C8CED8); }
+.cloth-silhouette {
+  font-size: 32px;
+  opacity: 0.25;
+}
+
+/* ─────────────────────────────────────────────
+   COORDINATE PAGE
+───────────────────────────────────────────── */
+.gender-row {
+  display: flex;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 3px;
+  margin-bottom: 14px;
+  flex-shrink: 0;
+}
+.gender-btn {
+  flex: 1;
+  padding: 8px 0;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 700;
+  text-align: center;
+  color: var(--ink2);
+  cursor: pointer;
+}
+.gender-btn.active {
+  background: var(--ink);
+  color: var(--bg);
+}
+
+.mode-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 14px;
+  flex-shrink: 0;
+}
+.mode-tab {
+  flex: 1;
+  padding: 10px 0;
+  font-size: 11px;
+  font-weight: 700;
+  text-align: center;
+  color: var(--ink3);
+  border-bottom: 2px solid transparent;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+}
+.mode-tab.active {
+  color: var(--ink);
+  border-bottom-color: var(--gold);
+}
+
+.section-title {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  color: var(--ink3);
+  margin-bottom: 8px;
+}
+
+.thumb-row {
+  display: flex;
+  gap: 7px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+  margin-bottom: 12px;
+  flex-shrink: 0;
+}
+.thumb-row::-webkit-scrollbar { display: none; }
+.item-thumb {
+  width: 56px; height: 56px;
+  border-radius: var(--r-md);
+  border: 1.5px solid var(--border);
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.item-thumb.selected {
+  border: 2px solid var(--gold);
+  box-shadow: 0 0 0 2px var(--gold-soft);
+}
+.thumb-check {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  width: 14px; height: 14px;
+  background: var(--gold);
+  border-radius: 50%;
+  font-size: 8px;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+
+.canvas-area {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  margin-bottom: 12px;
+  overflow: hidden;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 130px;
+}
+.canvas-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.canvas-placeholder-icon {
+  font-size: 32px;
+  opacity: 0.18;
+}
+.canvas-placeholder-text {
+  font-size: 10px;
+  color: var(--ink3);
+  font-weight: 600;
+}
+
+.btn-ai {
+  width: 100%;
+  padding: 14px 0;
+  background: var(--ink);
+  color: var(--bg);
+  border: none;
+  border-radius: var(--r-lg);
+  font-size: 13px;
+  font-weight: 700;
+  font-family: var(--font);
+  letter-spacing: -0.01em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.btn-ai-spark { color: var(--gold); font-size: 14px; }
+
+/* ─────────────────────────────────────────────
+   GENERATED PAGE
+───────────────────────────────────────────── */
+.gen-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  overflow: hidden;
+}
+.gen-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+}
+.gen-img {
+  width: 100%;
+  aspect-ratio: 3/4;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.gen-date-badge {
+  position: absolute;
+  top: 7px;
+  left: 7px;
+  background: rgba(253,252,248,0.88);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border-radius: 7px;
+  padding: 3px 7px;
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+}
+.gen-card-body {
+  padding: 8px 10px 10px;
+}
+.gen-card-name {
+  font-size: 10px;
+  color: var(--ink2);
+  margin-bottom: 6px;
+}
+.btn-save-small {
+  width: 100%;
+  padding: 8px 0;
+  background: var(--ink);
+  color: var(--bg);
+  border: none;
+  border-radius: var(--r-sm);
+  font-size: 10px;
+  font-weight: 700;
+  font-family: var(--font);
+  cursor: pointer;
+}
+
+/* Gradient placeholders for generated images */
+.gen-1 { background: linear-gradient(160deg, #2C2825 0%, #3D3530 50%, #2A2624 100%); }
+.gen-2 { background: linear-gradient(160deg, #252830 0%, #303540 50%, #22252D 100%); }
+.gen-3 { background: linear-gradient(160deg, #2A2730 0%, #383340 50%, #252230 100%); }
+.gen-4 { background: linear-gradient(160deg, #2E2825 0%, #3F3830 50%, #2A2420 100%); }
+
+.gen-mannequin {
+  font-size: 36px;
+  opacity: 0.25;
+}
+
+/* ─────────────────────────────────────────────
+   COMPONENT SECTION
+───────────────────────────────────────────── */
+.component-section {
+  margin-bottom: 80px;
+}
+.component-row {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+.component-block {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 20px;
+  padding: 24px;
+  min-width: 200px;
+}
+.component-block-title {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(253,252,248,0.3);
+  margin-bottom: 18px;
+}
+
+/* Isolated component display (on cream bg) */
+.on-cream {
+  background: var(--bg);
+  border-radius: var(--r-lg);
+  padding: 16px;
+}
+
+/* ─────────────────────────────────────────────
+   PALETTE SECTION
+───────────────────────────────────────────── */
+.palette-section {
+  margin-bottom: 80px;
+}
+.palette-grid {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.swatch-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.swatch {
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+}
+.swatch-name {
+  font-size: 9px;
+  font-weight: 700;
+  color: rgba(253,252,248,0.4);
+  letter-spacing: 0.06em;
+  text-align: center;
+  text-transform: uppercase;
+}
+.swatch-hex {
+  font-size: 10px;
+  font-weight: 600;
+  color: rgba(253,252,248,0.6);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ─────────────────────────────────────────────
+   TYPOGRAPHY SECTION
+───────────────────────────────────────────── */
+.type-section { margin-bottom: 80px; }
+.type-row {
+  display: flex;
+  align-items: baseline;
+  gap: 20px;
+  padding: 16px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.type-meta {
+  width: 140px;
+  flex-shrink: 0;
+  font-size: 10px;
+  color: rgba(253,252,248,0.3);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.type-sample { color: #FDFCF8; }
+
+/* ─────────────────────────────────────────────
+   FOOTER
+───────────────────────────────────────────── */
+.showcase-footer {
+  padding: 32px 0;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11px;
+  color: rgba(253,252,248,0.2);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* ─────────────────────────────────────────────
+   HEADER COUNT BADGE
+───────────────────────────────────────────── */
+.count-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface);
+  color: var(--ink2);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  margin-left: 8px;
+  vertical-align: middle;
+}
+
+/* Divider */
+.divider {
+  height: 1px;
+  background: var(--border);
+  margin: 10px 0;
+  flex-shrink: 0;
+}
+</style>
+</head>
+<body>
+<div class="showcase">
+
+<!-- ─── SHOWCASE HEADER ───────────────────────── -->
+<header class="showcase-header">
+  <span class="eyebrow">MyCloset — Design Proposal v5</span>
+  <h1 class="showcase-title">Capsule Noir</h1>
+  <p class="showcase-sub">Warm Minimal Luxe — プレミアムファッションコーデアプリ</p>
+  <div class="tagline-badge">温かみのある上質感 × モダンエディトリアル</div>
+</header>
+
+<!-- ─── PHONES ───────────────────────────────── -->
+<section class="phones-section">
+  <p class="section-label">01 — All Screens</p>
+  <div class="phones-row">
+
+    <!-- ┌────────────────────────────────────────┐
+         │  PHONE 1: HOME                         │
+         └────────────────────────────────────────┘ -->
+    <div class="phone-block">
+      <span class="phone-number">01</span>
+      <div class="phone">
+        <div class="screen">
+          <!-- Status Bar -->
+          <div class="status-bar">
+            <span class="status-time">9:41</span>
+            <div class="status-icons">
+              <span>●●●</span>
+              <span>WiFi</span>
+              <span>▐▌</span>
+            </div>
+          </div>
+          <!-- Home Header -->
+          <div class="home-header">
+            <div class="lettermark-row">
+              <div class="lettermark">M</div>
+              <span class="app-name">MyCloset</span>
+            </div>
+            <div class="app-tagline">あなたのワードローブ</div>
+            <!-- Stats -->
+            <div class="stats-row">
+              <div class="stat-block">
+                <div class="stat-num">24</div>
+                <div class="stat-label">アイテム</div>
+              </div>
+              <div class="stat-block">
+                <div class="stat-num">8</div>
+                <div class="stat-label">コーデ</div>
+              </div>
+            </div>
+          </div>
+          <!-- Nav Cards -->
+          <div class="screen-content" style="overflow:hidden;">
+            <div class="nav-cards">
+              <div class="nav-card">
+                <div class="nav-card-icon">📷</div>
+                <div class="nav-card-text">
+                  <div class="nav-card-title">アイテムを登録</div>
+                  <div class="nav-card-desc">服の写真を追加する</div>
+                </div>
+                <span class="nav-card-arrow">›</span>
+              </div>
+              <div class="nav-card">
+                <div class="nav-card-icon">🪞</div>
+                <div class="nav-card-text">
+                  <div class="nav-card-title">コーデを作る</div>
+                  <div class="nav-card-desc">AI でコーディネート</div>
+                </div>
+                <span class="nav-card-arrow">›</span>
+              </div>
+              <div class="nav-card">
+                <div class="nav-card-icon">🗂️</div>
+                <div class="nav-card-text">
+                  <div class="nav-card-title">クローゼット</div>
+                  <div class="nav-card-desc">登録済みアイテム <span class="nav-card-count">24</span></div>
+                </div>
+                <span class="nav-card-arrow">›</span>
+              </div>
+              <div class="nav-card">
+                <div class="nav-card-icon">✨</div>
+                <div class="nav-card-text">
+                  <div class="nav-card-title">生成画像</div>
+                  <div class="nav-card-desc">AI コーデ <span class="nav-card-count">8</span></div>
+                </div>
+                <span class="nav-card-arrow">›</span>
+              </div>
+            </div>
+          </div>
+          <!-- Bottom Nav -->
+          <div class="bottom-nav">
+            <div class="nav-item active">
+              <span class="nav-icon">🪡</span>
+              <span class="nav-label">ホーム</span>
+              <div class="nav-dot"></div>
+            </div>
+            <div class="nav-item">
+              <span class="nav-icon">📷</span>
+              <span class="nav-label">登録</span>
+              <div class="nav-dot-spacer"></div>
+            </div>
+            <div class="nav-item">
+              <span class="nav-icon">🪞</span>
+              <span class="nav-label">コーデ</span>
+              <div class="nav-dot-spacer"></div>
+            </div>
+            <div class="nav-item">
+              <span class="nav-icon">🗂️</span>
+              <span class="nav-label">クローゼット</span>
+              <div class="nav-dot-spacer"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <span class="phone-label">ホーム</span>
+    </div>
+
+    <!-- ┌────────────────────────────────────────┐
+         │  PHONE 2: REGISTER                     │
+         └────────────────────────────────────────┘ -->
+    <div class="phone-block">
+      <span class="phone-number">02</span>
+      <div class="phone">
+        <div class="screen">
+          <div class="status-bar">
+            <span class="status-time">9:41</span>
+            <div class="status-icons"><span>●●●</span><span>▐▌</span></div>
+          </div>
+          <div class="page-header">
+            <div class="page-title">新しいアイテム</div>
+            <div class="page-subtitle">服の写真を登録してください</div>
+            <div class="gold-rule"></div>
+          </div>
+          <div class="screen-content" style="overflow:hidden; padding-top:4px;">
+            <!-- Upload area with preview image simulation -->
+            <div style="position:relative; border-radius:var(--r-lg); overflow:hidden; margin-bottom:14px; height:160px; background:linear-gradient(135deg,#E8E4DC,#D8D3C8); border:2px solid var(--gold); display:flex; align-items:center; justify-content:center;">
+              <span style="font-size:52px; opacity:0.25;">👗</span>
+              <div style="position:absolute; bottom:10px; right:10px; background:rgba(26,25,24,0.68); backdrop-filter:blur(4px); color:#FDFCF8; font-size:10px; font-weight:700; padding:5px 12px; border-radius:8px; letter-spacing:0.01em;">変更する</div>
+            </div>
+            <!-- Floating Label Input -->
+            <div class="field-wrap">
+              <span class="field-label-float">アイテム名</span>
+              <input class="field-input" type="text" value="白シャツ" readonly style="border-color:var(--gold); box-shadow:0 0 0 3px var(--gold-soft);">
+            </div>
+            <!-- Category Buttons -->
+            <div class="cat-row">
+              <div class="cat-btn active-top">トップス</div>
+              <div class="cat-btn">ボトムス</div>
+            </div>
+            <!-- Submit -->
+            <button class="btn-primary">クローゼットに追加</button>
+          </div>
+          <div class="bottom-nav">
+            <div class="nav-item">
+              <span class="nav-icon">🪡</span>
+              <span class="nav-label">ホーム</span>
+              <div class="nav-dot-spacer"></div>
+            </div>
+            <div class="nav-item active">
+              <span class="nav-icon">📷</span>
+              <span class="nav-label">登録</span>
+              <div class="nav-dot"></div>
+            </div>
+            <div class="nav-item">
+              <span class="nav-icon">🪞</span>
+              <span class="nav-label">コーデ</span>
+              <div class="nav-dot-spacer"></div>
+            </div>
+            <div class="nav-item">
+              <span class="nav-icon">🗂️</span>
+              <span class="nav-label">クローゼット</span>
+              <div class="nav-dot-spacer"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <span class="phone-label">アイテム登録</span>
+    </div>
+
+    <!-- ┌────────────────────────────────────────┐
+         │  PHONE 3: CLOSET                       │
+         └────────────────────────────────────────┘ -->
+    <div class="phone-block">
+      <span class="phone-number">03</span>
+      <div class="phone">
+        <div class="screen">
+          <div class="status-bar">
+            <span class="status-time">9:41</span>
+            <div class="status-icons"><span>●●●</span><span>▐▌</span></div>
+          </div>
+          <div class="page-header" style="padding-bottom:0;">
+            <div style="display:flex; align-items:center; justify-content:space-between;">
+              <div class="page-title">クローゼット</div>
+              <span class="count-badge">24</span>
+            </div>
+            <div class="gold-rule" style="margin-bottom:12px;"></div>
+          </div>
+          <!-- Filter chips -->
+          <div class="filter-row" style="padding: 0 16px 12px;">
+            <div class="chip active-all">すべて</div>
+            <div class="chip">トップス</div>
+            <div class="chip">ボトムス</div>
+            <div class="chip">コーデ</div>
+          </div>
+          <!-- Grid -->
+          <div class="screen-content" style="overflow:hidden; padding-top:0;">
+            <div class="clothes-grid">
+              <div class="clothing-card selected">
+                <div class="clothing-img">
+                  <div class="clothing-img-inner cloth-1">
+                    <span class="cloth-silhouette">👕</span>
+                  </div>
+                  <div class="check-badge">✓</div>
+                </div>
+                <div class="clothing-info">
+                  <div class="clothing-name">白シャツ</div>
+                  <span class="cat-badge top">トップス</span>
+                </div>
+              </div>
+              <div class="clothing-card">
+                <div class="clothing-img">
+                  <div class="clothing-img-inner cloth-2">
+                    <span class="cloth-silhouette">👖</span>
+                  </div>
+                </div>
+                <div class="clothing-info">
+                  <div class="clothing-name">デニムパンツ</div>
+                  <span class="cat-badge bottom">ボトムス</span>
+                </div>
+              </div>
+              <div class="clothing-card">
+                <div class="clothing-img">
+                  <div class="clothing-img-inner cloth-3">
+                    <span class="cloth-silhouette">👔</span>
+                  </div>
+                </div>
+                <div class="clothing-info">
+                  <div class="clothing-name">ネイビーニット</div>
+                  <span class="cat-badge top">トップス</span>
+                </div>
+              </div>
+              <div class="clothing-card">
+                <div class="clothing-img">
+                  <div class="clothing-img-inner cloth-4">
+                    <span class="cloth-silhouette">👗</span>
+                  </div>
+                </div>
+                <div class="clothing-info">
+                  <div class="clothing-name">秋コーデ</div>
+                  <span class="cat-badge coord">コーデ</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="bottom-nav">
+            <div class="nav-item">
+              <span class="nav-icon">🪡</span>
+              <span class="nav-label">ホーム</span>
+              <div class="nav-dot-spacer"></div>
+            </div>
+            <div class="nav-item">
+              <span class="nav-icon">📷</span>
+              <span class="nav-label">登録</span>
+              <div class="nav-dot-spacer"></div>
+            </div>
+            <div class="nav-item">
+              <span class="nav-icon">🪞</span>
+              <span class="nav-label">コーデ</span>
+              <div class="nav-dot-spacer"></div>
+            </div>
+            <div class="nav-item active">
+              <span class="nav-icon">🗂️</span>
+              <span class="nav-label">クローゼット</span>
+              <div class="nav-dot"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <span class="phone-label">クローゼット</span>
+    </div>
+
+    <!-- ┌────────────────────────────────────────┐
+         │  PHONE 4: COORDINATE                   │
+         └────────────────────────────────────────┘ -->
+    <div class="phone-block">
+      <span class="phone-number">04</span>
+      <div class="phone">
+        <div class="screen">
+          <div class="status-bar">
+            <span class="status-time">9:41</span>
+            <div class="status-icons"><span>●●●</span><span>▐▌</span></div>
+          </div>
+          <div class="page-header" style="padding-bottom:8px;">
+            <div class="page-title">コーデを作る</div>
+            <div class="gold-rule"></div>
+          </div>
+          <div class="screen-content" style="overflow:hidden; padding-top:8px;">
+            <!-- Gender Toggle -->
+            <div class="gender-row">
+              <div class="gender-btn active">女性</div>
+              <div class="gender-btn">男性</div>
+            </div>
+            <!-- Mode Tabs -->
+            <div class="mode-tabs">
+              <div class="mode-tab active">自分でコーデ</div>
+              <div class="mode-tab">AIに任せる</div>
+            </div>
+            <!-- Tops -->
+            <div class="section-title">トップス</div>
+            <div class="thumb-row">
+              <div class="item-thumb selected cloth-1">
+                <span style="font-size:18px;opacity:0.3;">👕</span>
+                <div class="thumb-check">✓</div>
+              </div>
+              <div class="item-thumb cloth-3">
+                <span style="font-size:18px;opacity:0.3;">👔</span>
+              </div>
+              <div class="item-thumb cloth-5">
+                <span style="font-size:18px;opacity:0.3;">🧥</span>
+              </div>
+              <div class="item-thumb cloth-6">
+                <span style="font-size:18px;opacity:0.3;">👕</span>
+              </div>
+            </div>
+            <!-- Bottoms -->
+            <div class="section-title">ボトムス</div>
+            <div class="thumb-row">
+              <div class="item-thumb selected cloth-2">
+                <span style="font-size:18px;opacity:0.3;">👖</span>
+                <div class="thumb-check">✓</div>
+              </div>
+              <div class="item-thumb cloth-4">
+                <span style="font-size:18px;opacity:0.3;">👖</span>
+              </div>
+              <div class="item-thumb cloth-1" style="opacity:0.35;">
+                <span style="font-size:18px;opacity:0.3;">🩲</span>
+              </div>
+            </div>
+            <!-- Canvas Preview -->
+            <div class="canvas-area">
+              <div class="canvas-placeholder">
+                <span class="canvas-placeholder-icon">🪞</span>
+                <span class="canvas-placeholder-text">コーデプレビュー</span>
+              </div>
+            </div>
+            <!-- AI Button -->
+            <button class="btn-ai">
+              <span class="btn-ai-spark">✦</span>
+              AIでコーデを生成
+            </button>
+          </div>
+          <div class="bottom-nav">
+            <div class="nav-item">
+              <span class="nav-icon">🪡</span>
+              <span class="nav-label">ホーム</span>
+              <div class="nav-dot-spacer"></div>
+            </div>
+            <div class="nav-item">
+              <span class="nav-icon">📷</span>
+              <span class="nav-label">登録</span>
+              <div class="nav-dot-spacer"></div>
+            </div>
+            <div class="nav-item active">
+              <span class="nav-icon">🪞</span>
+              <span class="nav-label">コーデ</span>
+              <div class="nav-dot"></div>
+            </div>
+            <div class="nav-item">
+              <span class="nav-icon">🗂️</span>
+              <span class="nav-label">クローゼット</span>
+              <div class="nav-dot-spacer"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <span class="phone-label">コーデ作成</span>
+    </div>
+
+    <!-- ┌────────────────────────────────────────┐
+         │  PHONE 5: GENERATED                    │
+         └────────────────────────────────────────┘ -->
+    <div class="phone-block">
+      <span class="phone-number">05</span>
+      <div class="phone">
+        <div class="screen">
+          <div class="status-bar">
+            <span class="status-time">9:41</span>
+            <div class="status-icons"><span>●●●</span><span>▐▌</span></div>
+          </div>
+          <div class="page-header" style="padding-bottom:12px;">
+            <div style="display:flex; align-items:center;">
+              <div class="page-title">生成画像</div>
+              <span class="count-badge">8</span>
+            </div>
+            <div class="gold-rule"></div>
+          </div>
+          <div class="screen-content" style="overflow:hidden; padding-top:0;">
+            <div class="gen-grid">
+              <div class="gen-card">
+                <div class="gen-img gen-1">
+                  <span class="gen-mannequin">🧍</span>
+                  <div class="gen-date-badge">3/28</div>
+                </div>
+                <div class="gen-card-body">
+                  <div class="gen-card-name">カジュアルコーデ</div>
+                  <button class="btn-save-small">保存する</button>
+                </div>
+              </div>
+              <div class="gen-card">
+                <div class="gen-img gen-2">
+                  <span class="gen-mannequin">🧍</span>
+                  <div class="gen-date-badge">3/27</div>
+                </div>
+                <div class="gen-card-body">
+                  <div class="gen-card-name">スマートカジュアル</div>
+                  <button class="btn-save-small">保存する</button>
+                </div>
+              </div>
+              <div class="gen-card">
+                <div class="gen-img gen-3">
+                  <span class="gen-mannequin">🧍</span>
+                  <div class="gen-date-badge">3/25</div>
+                </div>
+                <div class="gen-card-body">
+                  <div class="gen-card-name">未設定</div>
+                  <button class="btn-save-small">保存する</button>
+                </div>
+              </div>
+              <div class="gen-card">
+                <div class="gen-img gen-4">
+                  <span class="gen-mannequin">🧍</span>
+                  <div class="gen-date-badge">3/22</div>
+                </div>
+                <div class="gen-card-body">
+                  <div class="gen-card-name">エレガント</div>
+                  <button class="btn-save-small">保存する</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="bottom-nav">
+            <div class="nav-item">
+              <span class="nav-icon">🪡</span>
+              <span class="nav-label">ホーム</span>
+              <div class="nav-dot-spacer"></div>
+            </div>
+            <div class="nav-item">
+              <span class="nav-icon">📷</span>
+              <span class="nav-label">登録</span>
+              <div class="nav-dot-spacer"></div>
+            </div>
+            <div class="nav-item">
+              <span class="nav-icon">🪞</span>
+              <span class="nav-label">コーデ</span>
+              <div class="nav-dot-spacer"></div>
+            </div>
+            <div class="nav-item active">
+              <span class="nav-icon">🗂️</span>
+              <span class="nav-label">クローゼット</span>
+              <div class="nav-dot"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <span class="phone-label">生成画像ギャラリー</span>
+    </div>
+
+  </div><!-- /phones-row -->
+</section>
+
+<!-- ─── COLOR PALETTE ─────────────────────────── -->
+<section class="palette-section">
+  <p class="section-label">02 — カラーパレット "Capsule Noir"</p>
+  <div class="palette-grid">
+    <div class="swatch-item">
+      <div class="swatch" style="background:#FDFCF8; box-shadow:0 4px 16px rgba(0,0,0,0.4), inset 0 0 0 1px rgba(0,0,0,0.06);"></div>
+      <div class="swatch-name">Background</div>
+      <div class="swatch-hex">#FDFCF8</div>
+    </div>
+    <div class="swatch-item">
+      <div class="swatch" style="background:#F4F3EE;"></div>
+      <div class="swatch-name">Surface</div>
+      <div class="swatch-hex">#F4F3EE</div>
+    </div>
+    <div class="swatch-item">
+      <div class="swatch" style="background:#ECEAE3;"></div>
+      <div class="swatch-name">Surface 2</div>
+      <div class="swatch-hex">#ECEAE3</div>
+    </div>
+    <div class="swatch-item">
+      <div class="swatch" style="background:#E2DFD7;"></div>
+      <div class="swatch-name">Border</div>
+      <div class="swatch-hex">#E2DFD7</div>
+    </div>
+    <div class="swatch-item">
+      <div class="swatch" style="background:#1A1918;"></div>
+      <div class="swatch-name">Ink</div>
+      <div class="swatch-hex">#1A1918</div>
+    </div>
+    <div class="swatch-item">
+      <div class="swatch" style="background:#8A8880;"></div>
+      <div class="swatch-name">Ink 2</div>
+      <div class="swatch-hex">#8A8880</div>
+    </div>
+    <div class="swatch-item">
+      <div class="swatch" style="background:#B5B3AC;"></div>
+      <div class="swatch-name">Ink 3</div>
+      <div class="swatch-hex">#B5B3AC</div>
+    </div>
+    <div class="swatch-item">
+      <div class="swatch" style="background:linear-gradient(135deg,#C9A96E,#D4B87A); box-shadow:0 4px 16px rgba(201,169,110,0.4);"></div>
+      <div class="swatch-name">Gold</div>
+      <div class="swatch-hex">#C9A96E</div>
+    </div>
+    <div class="swatch-item">
+      <div class="swatch" style="background:#E6EFEA;"></div>
+      <div class="swatch-name">Sage BG</div>
+      <div class="swatch-hex">#E6EFEA</div>
+    </div>
+    <div class="swatch-item">
+      <div class="swatch" style="background:#2A6041;"></div>
+      <div class="swatch-name">Sage</div>
+      <div class="swatch-hex">#2A6041</div>
+    </div>
+    <div class="swatch-item">
+      <div class="swatch" style="background:#F5EDE4;"></div>
+      <div class="swatch-name">Terra BG</div>
+      <div class="swatch-hex">#F5EDE4</div>
+    </div>
+    <div class="swatch-item">
+      <div class="swatch" style="background:#8B4513;"></div>
+      <div class="swatch-name">Terracotta</div>
+      <div class="swatch-hex">#8B4513</div>
+    </div>
+    <div class="swatch-item">
+      <div class="swatch" style="background:#EAE6F4;"></div>
+      <div class="swatch-name">Lavender BG</div>
+      <div class="swatch-hex">#EAE6F4</div>
+    </div>
+    <div class="swatch-item">
+      <div class="swatch" style="background:#4B3B8C;"></div>
+      <div class="swatch-name">Lavender</div>
+      <div class="swatch-hex">#4B3B8C</div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── COMPONENTS ────────────────────────────── -->
+<section class="component-section">
+  <p class="section-label">03 — コンポーネント</p>
+  <div class="component-row">
+
+    <!-- ClothingCard States -->
+    <div class="component-block">
+      <div class="component-block-title">ClothingCard — 3 States</div>
+      <div style="display:flex; gap:10px; background:var(--bg); padding:16px; border-radius:14px;">
+        <!-- Default -->
+        <div style="width:80px;">
+          <div class="clothing-card" style="width:80px;">
+            <div class="clothing-img" style="height:80px;">
+              <div class="clothing-img-inner cloth-1">
+                <span style="font-size:24px;opacity:0.25;">👕</span>
+              </div>
+            </div>
+            <div class="clothing-info" style="padding:6px 8px 7px;">
+              <div class="clothing-name" style="font-size:9px;">白シャツ</div>
+              <span class="cat-badge top" style="font-size:8px;">トップス</span>
+            </div>
+          </div>
+          <div style="text-align:center;font-size:9px;color:rgba(253,252,248,0.35);margin-top:8px;font-weight:600;">Default</div>
+        </div>
+        <!-- Selected -->
+        <div style="width:80px;">
+          <div class="clothing-card selected" style="width:80px;">
+            <div class="clothing-img" style="height:80px;">
+              <div class="clothing-img-inner cloth-3">
+                <span style="font-size:24px;opacity:0.25;">👔</span>
+              </div>
+              <div class="check-badge" style="width:16px;height:16px;font-size:8px;top:4px;right:4px;">✓</div>
+            </div>
+            <div class="clothing-info" style="padding:6px 8px 7px;">
+              <div class="clothing-name" style="font-size:9px;">ニット</div>
+              <span class="cat-badge top" style="font-size:8px;">トップス</span>
+            </div>
+          </div>
+          <div style="text-align:center;font-size:9px;color:var(--gold);margin-top:8px;font-weight:600;">Selected</div>
+        </div>
+        <!-- Bottom category -->
+        <div style="width:80px;">
+          <div class="clothing-card" style="width:80px;">
+            <div class="clothing-img" style="height:80px;">
+              <div class="clothing-img-inner cloth-2">
+                <span style="font-size:24px;opacity:0.25;">👖</span>
+              </div>
+            </div>
+            <div class="clothing-info" style="padding:6px 8px 7px;">
+              <div class="clothing-name" style="font-size:9px;">デニム</div>
+              <span class="cat-badge bottom" style="font-size:8px;">ボトムス</span>
+            </div>
+          </div>
+          <div style="text-align:center;font-size:9px;color:rgba(253,252,248,0.35);margin-top:8px;font-weight:600;">Bottom</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Category Chips -->
+    <div class="component-block">
+      <div class="component-block-title">Category Chips</div>
+      <div style="display:flex; flex-direction:column; gap:8px; background:var(--bg); padding:16px; border-radius:14px;">
+        <div class="chip active-all" style="display:inline-block; width:fit-content;">すべて</div>
+        <div class="chip active-top" style="display:inline-block; width:fit-content;">トップス</div>
+        <div class="chip active-bottom" style="display:inline-block; width:fit-content;">ボトムス</div>
+        <div class="chip active-coord" style="display:inline-block; width:fit-content;">コーデ</div>
+      </div>
+    </div>
+
+    <!-- Buttons -->
+    <div class="component-block">
+      <div class="component-block-title">Buttons</div>
+      <div style="display:flex; flex-direction:column; gap:8px; background:var(--bg); padding:16px; border-radius:14px; width:160px;">
+        <button class="btn-primary" style="border-radius:12px;">クローゼットに追加</button>
+        <button class="btn-ai" style="border-radius:12px; padding:12px 0;">
+          <span class="btn-ai-spark">✦</span> AI生成
+        </button>
+        <button class="btn-primary" style="border-radius:12px; background:var(--surface2); color:var(--ink3);" disabled>無効ボタン</button>
+        <button style="width:100%; padding:11px 0; background:transparent; color:var(--ink); border:1.5px solid var(--border); border-radius:12px; font-size:12px; font-weight:700; font-family:var(--font); cursor:pointer;">ゴーストボタン</button>
+      </div>
+    </div>
+
+    <!-- Bottom Nav -->
+    <div class="component-block">
+      <div class="component-block-title">Bottom Navigation</div>
+      <div style="background:var(--bg); border-radius:14px; overflow:hidden; width:260px;">
+        <div class="bottom-nav" style="border-top:1px solid var(--border);">
+          <div class="nav-item active">
+            <span class="nav-icon">🪡</span>
+            <span class="nav-label" style="color:var(--ink);">ホーム</span>
+            <div class="nav-dot"></div>
+          </div>
+          <div class="nav-item">
+            <span class="nav-icon">📷</span>
+            <span class="nav-label">登録</span>
+            <div class="nav-dot-spacer"></div>
+          </div>
+          <div class="nav-item">
+            <span class="nav-icon">🪞</span>
+            <span class="nav-label">コーデ</span>
+            <div class="nav-dot-spacer"></div>
+          </div>
+          <div class="nav-item">
+            <span class="nav-icon">🗂️</span>
+            <span class="nav-label">クローゼット</span>
+            <div class="nav-dot-spacer"></div>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:10px; font-size:9px; color:rgba(253,252,248,0.25); font-weight:600; letter-spacing:0.06em;">
+        ACTIVE STATE — ゴールドドット + インクテキスト
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ─── TYPOGRAPHY ────────────────────────────── -->
+<section class="type-section">
+  <p class="section-label">04 — タイポグラフィスケール</p>
+  <div>
+    <div class="type-row">
+      <div class="type-meta">DISPLAY / 40px / 900</div>
+      <div class="type-sample" style="font-size:40px; font-weight:900; letter-spacing:-0.04em; line-height:1;">24</div>
+    </div>
+    <div class="type-row">
+      <div class="type-meta">HEADING / 22px / 900</div>
+      <div class="type-sample" style="font-size:22px; font-weight:900; letter-spacing:-0.03em;">クローゼット</div>
+    </div>
+    <div class="type-row">
+      <div class="type-meta">SUBHEADING / 15px / 700</div>
+      <div class="type-sample" style="font-size:15px; font-weight:700; letter-spacing:-0.01em;">アイテムを登録する</div>
+    </div>
+    <div class="type-row">
+      <div class="type-meta">BODY / 13px / 400</div>
+      <div class="type-sample" style="font-size:13px; color:rgba(253,252,248,0.6);">服の写真をアップロードしてクローゼットを管理しましょう</div>
+    </div>
+    <div class="type-row">
+      <div class="type-meta">LABEL / 11px / 700 UPPER</div>
+      <div class="type-sample" style="font-size:11px; font-weight:700; letter-spacing:0.10em; text-transform:uppercase; color:rgba(253,252,248,0.4);">トップス</div>
+    </div>
+    <div class="type-row">
+      <div class="type-meta">CAPTION / 10px / 600</div>
+      <div class="type-sample" style="font-size:10px; font-weight:600; color:rgba(253,252,248,0.35);">3月28日</div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── FOOTER ────────────────────────────────── -->
+<footer class="showcase-footer">
+  <span>MyCloset — Design System v5</span>
+  <span style="color:var(--gold);">Capsule Noir</span>
+  <span>2026</span>
+</footer>
+
+</div><!-- /showcase -->
+</body>
+</html>
