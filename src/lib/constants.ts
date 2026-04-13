@@ -1,4 +1,5 @@
 export const STORAGE_KEY = 'mycloset_v1';
+export const ONBOARDING_KEY = 'mycloset_onboarded_v1';
 export const GENERATED_KEY = 'mycloset_generated_v1';
 export const DB_NAME = 'mycloset-db';
 export const DB_VERSION = 1;

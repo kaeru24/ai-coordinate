@@ -3,17 +3,25 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { getItems, getGeneratedImages } from '@/lib/storage';
+import { ONBOARDING_KEY } from '@/lib/constants';
+import OnboardingGuide from '@/components/OnboardingGuide';
 
 export default function HomePage() {
   const [count, setCount] = useState(0);
   const [genCount, setGenCount] = useState(0);
+  const [showGuide, setShowGuide] = useState(false);
 
   useEffect(() => {
     setCount(getItems().length);
     setGenCount(getGeneratedImages().length);
+    if (typeof window !== 'undefined' && !localStorage.getItem(ONBOARDING_KEY)) {
+      setShowGuide(true);
+    }
   }, []);
 
   return (
+    <>
+    {showGuide && <OnboardingGuide onClose={() => setShowGuide(false)} />}
     <div className="max-w-sm mx-auto px-4 pt-10 pb-28">
       {/* Header */}
       <div className="mb-6">
@@ -214,5 +222,6 @@ export default function HomePage() {
         </Link>
       </div>
     </div>
+    </>
   );
 }
