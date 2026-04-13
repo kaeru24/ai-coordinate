@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ClothingItem } from '@/types';
-import { addItem, deleteItem, getItems, updateItem } from '@/lib/storage';
+import { addItem, deleteItem, getGeneratedImages, getItems, updateItem } from '@/lib/storage';
 import { deleteImage, saveImage } from '@/lib/imageDb';
 import { compressImage } from '@/lib/imageUtils';
 import { FULL_MAX, THUMB_MAX } from '@/lib/constants';
@@ -29,7 +29,11 @@ export function useCloset() {
 
   const remove = useCallback(async (id: string) => {
     deleteItem(id);
-    await deleteImage(id);
+    // 生成画像リストにも同じIDが存在する場合はIndexedDB画像を削除しない
+    const stillUsedAsGenerated = getGeneratedImages().some((g) => g.id === id);
+    if (!stillUsedAsGenerated) {
+      await deleteImage(id);
+    }
     setItems((prev) => prev.filter((i) => i.id !== id));
   }, []);
 
@@ -40,6 +44,8 @@ export function useCloset() {
 
   const tops = useMemo(() => items.filter((i) => i.category === 'top'), [items]);
   const bottoms = useMemo(() => items.filter((i) => i.category === 'bottom'), [items]);
+  const outers = useMemo(() => items.filter((i) => i.category === 'outer'), [items]);
+  const accessories = useMemo(() => items.filter((i) => i.category === 'accessory'), [items]);
 
-  return { items, tops, bottoms, add, remove, rename };
+  return { items, tops, bottoms, outers, accessories, add, remove, rename };
 }

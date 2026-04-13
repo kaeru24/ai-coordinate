@@ -163,7 +163,7 @@ const cardStyle: React.CSSProperties = {
 };
 
 export default function CoordinatePage() {
-  const { tops, bottoms, items } = useCloset();
+  const { tops, bottoms, outers, accessories, items } = useCloset();
   const [mode, setMode] = useState<'single' | 'multi'>('single');
   const [gender, setGender] = useState<Gender>('female');
 
@@ -174,6 +174,7 @@ export default function CoordinatePage() {
 
   const selectedTops = tops.filter((t) => selectedIds.includes(t.id));
   const selectedBottoms = bottoms.filter((b) => selectedIds.includes(b.id));
+  const selectedItems = items.filter((i) => selectedIds.includes(i.id));
 
   function toggleSingle(id: string) {
     setSelectedIds((prev) =>
@@ -192,10 +193,12 @@ export default function CoordinatePage() {
         Promise.all(selectedTops.map(toGarmentInput)),
         Promise.all(selectedBottoms.map(toGarmentInput)),
       ]);
+      const outersInput = await Promise.all(outers.filter((o) => selectedIds.includes(o.id)).map(toGarmentInput));
+      const accessoriesInput = await Promise.all(accessories.filter((a) => selectedIds.includes(a.id)).map(toGarmentInput));
       const res = await fetch('/api/generate-outfit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ tops: topsInput, bottoms: bottomsInput, gender }),
+        body: JSON.stringify({ tops: topsInput, bottoms: bottomsInput, outers: outersInput, accessories: accessoriesInput, gender }),
       });
       if (!res.ok) { const d = await res.json(); throw new Error(d.error ?? `HTTP ${res.status}`); }
       const { imageData, mimeType } = await res.json();
@@ -266,7 +269,7 @@ const [wardrobeIds, setWardrobeIds] = useState<string[]>([]);
     setMultiResults((prev) => prev.map((x, i) => i === idx ? { ...x, saved: true } : x));
   }
 
-  const allSelectableItems = [...tops, ...bottoms];
+  const allSelectableItems = [...tops, ...bottoms, ...outers, ...accessories];
   const atMaxSingle = selectedIds.length >= MAX_SINGLE;
   const atMaxWardrobe = wardrobeIds.length >= MAX_WARDROBE;
 
@@ -281,27 +284,29 @@ const [wardrobeIds, setWardrobeIds] = useState<string[]>([]);
       </div>
 
       {/* Gender selector */}
-      <div
-        className="flex rounded-xl p-1 gap-1"
-        style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
-      >
-        <p className="text-[11px] font-semibold self-center px-2" style={{ color: 'var(--ink3)' }}>
+      <div className="flex flex-col gap-1.5">
+        <p className="text-[11px] font-semibold px-1" style={{ color: 'var(--ink3)' }}>
           マネキンを選ぶ
         </p>
-        {(['female', 'male'] as Gender[]).map((g) => (
-          <button
-            key={g}
-            onClick={() => setGender(g)}
-            className="flex-1 py-2 rounded-lg text-[12px] font-bold transition-all"
-            style={
-              gender === g
-                ? { background: 'var(--ink)', color: 'var(--bg)' }
-                : { background: 'transparent', color: 'var(--ink2)' }
-            }
-          >
-            {g === 'female' ? '女性' : '男性'}
-          </button>
-        ))}
+        <div
+          className="flex rounded-xl p-1 gap-1"
+          style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
+        >
+          {(['female', 'male'] as Gender[]).map((g) => (
+            <button
+              key={g}
+              onClick={() => setGender(g)}
+              className="flex-1 py-2 rounded-lg text-[12px] font-bold transition-all"
+              style={
+                gender === g
+                  ? { background: 'var(--ink)', color: 'var(--bg)' }
+                  : { background: 'transparent', color: 'var(--ink2)' }
+              }
+            >
+              {g === 'female' ? '女性' : '男性'}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Mode tabs (underline style) */}
@@ -370,6 +375,36 @@ const [wardrobeIds, setWardrobeIds] = useState<string[]>([]);
                   </div>
               }
             </div>
+
+            {outers.length > 0 && (
+              <div>
+                <p style={{ ...sectionLabelStyle, marginBottom: 6 }}>アウター</p>
+                <div className="flex gap-2 overflow-x-auto pb-1">
+                  {outers.map((item) => (
+                    <ItemThumb key={item.id} item={item}
+                      selected={selectedIds.includes(item.id)}
+                      disabled={atMaxSingle && !selectedIds.includes(item.id)}
+                      onSelect={() => toggleSingle(item.id)}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {accessories.length > 0 && (
+              <div>
+                <p style={{ ...sectionLabelStyle, marginBottom: 6 }}>アクセサリー</p>
+                <div className="flex gap-2 overflow-x-auto pb-1">
+                  {accessories.map((item) => (
+                    <ItemThumb key={item.id} item={item}
+                      selected={selectedIds.includes(item.id)}
+                      disabled={atMaxSingle && !selectedIds.includes(item.id)}
+                      onSelect={() => toggleSingle(item.id)}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
 
           </div>
 

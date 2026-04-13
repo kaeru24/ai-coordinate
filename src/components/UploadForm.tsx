@@ -41,16 +41,17 @@ function CropModal({
   }
 
   function onPointerMove(e: React.PointerEvent) {
-    if (!dragging.current) return;
+    const d = dragging.current;
+    if (!d) return;
     const pos = getRelativePos(e);
-    const dx = pos.x - dragging.current.startX;
-    const dy = pos.y - dragging.current.startY;
-    const sc = dragging.current.startCrop;
+    const dx = pos.x - d.startX;
+    const dy = pos.y - d.startY;
+    const sc = d.startCrop;
     const MIN = 0.05;
 
     setCrop(() => {
       let { x, y, w, h } = sc;
-      switch (dragging.current!.type) {
+      switch (d.type) {
         case 'move':
           x = Math.max(0, Math.min(1 - w, sc.x + dx));
           y = Math.max(0, Math.min(1 - h, sc.y + dy));
