@@ -3,28 +3,15 @@
 import { useEffect, useRef, useState } from 'react';
 import { v4 as uuid } from 'uuid';
 import { useCloset } from '@/hooks/useCloset';
-import CanvasComposer, { CanvasComposerHandle } from '@/components/CanvasComposer';
 import { getImage, saveImage } from '@/lib/imageDb';
 import { blobToObjectUrl } from '@/lib/imageUtils';
 import { addGeneratedImage, addItem } from '@/lib/storage';
 import { ClothingItem } from '@/types';
 
-const MAX_SINGLE = 5;
+const MAX_SINGLE = 8;
 const MAX_WARDROBE = 20;
 const PROGRESS_DURATION = 25000;
 
-function useItemUrl(item: ClothingItem | undefined): string | null {
-  const [url, setUrl] = useState<string | null>(null);
-  useEffect(() => {
-    if (!item) { setUrl(null); return; }
-    let objectUrl: string | null = null;
-    getImage(item.id).then((rec) => {
-      if (rec) { objectUrl = blobToObjectUrl(rec.full); setUrl(objectUrl); }
-    });
-    return () => { if (objectUrl) URL.revokeObjectURL(objectUrl); };
-  }, [item]);
-  return url;
-}
 
 function ItemThumb({
   item, selected, disabled, onSelect,
@@ -184,15 +171,9 @@ export default function CoordinatePage() {
   const [aiResult, setAiResult] = useState<AiResult | null>(null);
   const [aiLoading, setAiLoading] = useState(false);
   const [aiError, setAiError] = useState<string | null>(null);
-  const [canvasSaving, setCanvasSaving] = useState(false);
-  const [canvasSaved, setCanvasSaved] = useState(false);
-  const [canvasName, setCanvasName] = useState('');
-  const canvasRef = useRef<CanvasComposerHandle>(null);
 
   const selectedTops = tops.filter((t) => selectedIds.includes(t.id));
   const selectedBottoms = bottoms.filter((b) => selectedIds.includes(b.id));
-  const previewTopUrl = useItemUrl(selectedTops[0]);
-  const previewBottomUrl = useItemUrl(selectedBottoms[0]);
 
   function toggleSingle(id: string) {
     setSelectedIds((prev) =>
@@ -206,8 +187,6 @@ export default function CoordinatePage() {
     setAiLoading(true);
     setAiError(null);
     setAiResult(null);
-    setCanvasSaved(false);
-    setCanvasName('');
     try {
       const [topsInput, bottomsInput] = await Promise.all([
         Promise.all(selectedTops.map(toGarmentInput)),
@@ -235,23 +214,7 @@ export default function CoordinatePage() {
     setAiResult((prev) => prev ? { ...prev, saved: true } : null);
   }
 
-  async function handleSaveCanvas() {
-    if (!canvasRef.current) return;
-    setCanvasSaving(true);
-    try {
-      const blob = await canvasRef.current.getBlob();
-      if (!blob) return;
-      const genId = uuid();
-      await saveImage(genId, { thumbnail: blob, full: blob });
-      addGeneratedImage({ id: genId, createdAt: new Date().toISOString() });
-      addItem({ id: genId, name: canvasName || 'コーデ', category: 'coordinate', createdAt: new Date().toISOString(), usedItemIds: selectedIds });
-      setCanvasSaved(true);
-    } finally {
-      setCanvasSaving(false);
-    }
-  }
-
-  const [wardrobeIds, setWardrobeIds] = useState<string[]>([]);
+const [wardrobeIds, setWardrobeIds] = useState<string[]>([]);
   const [numOutfits, setNumOutfits] = useState(3);
   const [multiResults, setMultiResults] = useState<AiResult[]>([]);
   const [multiLoading, setMultiLoading] = useState(false);
@@ -323,7 +286,7 @@ export default function CoordinatePage() {
         style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
       >
         <p className="text-[11px] font-semibold self-center px-2" style={{ color: 'var(--ink3)' }}>
-          マネキン
+          マネキンを選ぶ
         </p>
         {(['female', 'male'] as Gender[]).map((g) => (
           <button
@@ -351,14 +314,13 @@ export default function CoordinatePage() {
               className="flex-1 py-2.5 text-[12px] font-bold transition-all"
               style={{
                 color: mode === m ? 'var(--ink)' : 'var(--ink3)',
-                borderBottom: mode === m ? '2px solid var(--gold)' : '2px solid transparent',
                 marginBottom: -1,
                 background: 'transparent',
                 border: 'none',
                 borderBottom: mode === m ? '2px solid var(--gold)' : '2px solid transparent',
               } as React.CSSProperties}
             >
-              {m === 'single' ? '自分でコーデする' : 'AIに複数コーデ'}
+              {m === 'single' ? '自分でコーデする' : 'AIにコーデしてもらう'}
             </button>
           ))}
         </div>
@@ -409,36 +371,6 @@ export default function CoordinatePage() {
               }
             </div>
 
-            <CanvasComposer ref={canvasRef} topUrl={previewTopUrl} bottomUrl={previewBottomUrl} />
-
-            <div className="flex flex-col gap-2" style={{ borderTop: '1px solid var(--border)', paddingTop: 12 }}>
-              <input
-                type="text"
-                value={canvasName}
-                onChange={(e) => setCanvasName(e.target.value)}
-                placeholder="コーデ名（任意）"
-                style={inputStyle}
-                onFocus={(e) => { e.target.style.borderColor = 'var(--gold)'; e.target.style.boxShadow = '0 0 0 3px var(--gold-soft)'; }}
-                onBlur={(e) => { e.target.style.borderColor = 'var(--border)'; e.target.style.boxShadow = 'none'; }}
-              />
-              {canvasSaved ? (
-                <p className="text-xs text-center font-semibold" style={{ color: 'var(--gold)' }}>
-                  ✓ コーデに保存しました
-                </p>
-              ) : (
-                <button
-                  onClick={handleSaveCanvas}
-                  disabled={canvasSaving || selectedIds.length === 0}
-                  className="rounded-xl px-6 py-2.5 font-bold transition text-sm"
-                  style={{
-                    background: canvasSaving || selectedIds.length === 0 ? 'var(--surface2)' : 'var(--ink)',
-                    color: canvasSaving || selectedIds.length === 0 ? 'var(--ink3)' : 'var(--bg)',
-                  }}
-                >
-                  {canvasSaving ? '保存中...' : 'このコーデを保存'}
-                </button>
-              )}
-            </div>
           </div>
 
           {/* AI generation card */}
@@ -464,6 +396,14 @@ export default function CoordinatePage() {
               <div className="flex flex-col gap-2">
                 <ProgressBar loading={aiLoading} />
                 <p className="text-xs text-center" style={{ color: 'var(--ink3)' }}>画像を生成しています...</p>
+                <div
+                  className="rounded-xl p-3 text-xs text-center leading-relaxed"
+                  style={{ background: 'var(--surface2)', color: 'var(--ink2)' }}
+                >
+                  ⚠️ 生成には時間がかかります。<br />
+                  完了するまでブラウザを閉じたり<br />
+                  前のページに戻らないでください。
+                </div>
               </div>
             )}
 
@@ -544,14 +484,14 @@ export default function CoordinatePage() {
                 <span className="font-black text-lg" style={{ color: 'var(--gold)' }}>{numOutfits}枚</span>
               </div>
               <input
-                type="range" min={1} max={5} step={1}
+                type="range" min={1} max={10} step={1}
                 value={numOutfits}
                 onChange={(e) => setNumOutfits(Number(e.target.value))}
                 className="w-full"
                 style={{ accentColor: 'var(--gold)' }}
               />
               <div className="flex justify-between text-xs px-0.5" style={{ color: 'var(--ink3)' }}>
-                {[1,2,3,4,5].map((n) => <span key={n}>{n}</span>)}
+                {[1,2,3,4,5,6,7,8,9,10].map((n) => <span key={n}>{n}</span>)}
               </div>
             </div>
 
@@ -574,6 +514,14 @@ export default function CoordinatePage() {
                 <p className="text-xs text-center" style={{ color: 'var(--ink3)' }}>
                   {multiProgress}/{numOutfits} 完了
                 </p>
+                <div
+                  className="rounded-xl p-3 text-xs text-center leading-relaxed"
+                  style={{ background: 'var(--surface2)', color: 'var(--ink2)' }}
+                >
+                  ⚠️ 生成には時間がかかります。<br />
+                  完了するまでブラウザを閉じたり<br />
+                  前のページに戻らないでください。
+                </div>
               </div>
             )}
 

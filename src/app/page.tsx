@@ -47,16 +47,17 @@ export default function HomePage() {
           </h1>
         </div>
         <p className="text-[12px]" style={{ color: 'var(--ink3)', marginLeft: 52 }}>
-          あなたのワードローブ
+          あなたのクローゼット
         </p>
         <div className="w-7 h-0.5 rounded-full mt-3" style={{ background: 'var(--gold)', marginLeft: 52 }} />
       </div>
 
       {/* Stats row */}
       <div className="flex gap-3 mb-6">
-        <div
-          className="flex-1 rounded-[20px] p-4 flex flex-col gap-1"
-          style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
+        <Link
+          href="/closet"
+          className="flex-1 rounded-[20px] p-4 flex flex-col gap-1 transition-all hover:-translate-y-0.5"
+          style={{ background: 'var(--surface)', border: '1px solid var(--border)', boxShadow: 'var(--shadow-card)' }}
         >
           <span
             className="font-black leading-none"
@@ -70,10 +71,11 @@ export default function HomePage() {
           >
             アイテム
           </span>
-        </div>
-        <div
-          className="flex-1 rounded-[20px] p-4 flex flex-col gap-1"
-          style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
+        </Link>
+        <Link
+          href="/closet?filter=coordinate"
+          className="flex-1 rounded-[20px] p-4 flex flex-col gap-1 transition-all hover:-translate-y-0.5"
+          style={{ background: 'var(--surface)', border: '1px solid var(--border)', boxShadow: 'var(--shadow-card)' }}
         >
           <span
             className="font-black leading-none"
@@ -87,7 +89,7 @@ export default function HomePage() {
           >
             コーデ
           </span>
-        </div>
+        </Link>
       </div>
 
       {/* Navigation cards */}

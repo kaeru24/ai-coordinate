@@ -17,6 +17,8 @@ function categoryLabel(category: ClothingItem['category']) {
   switch (category) {
     case 'top': return 'トップス';
     case 'bottom': return 'ボトムス';
+    case 'outer': return 'アウター';
+    case 'accessory': return 'アクセサリー';
     case 'coordinate': return 'コーデ';
   }
 }
@@ -27,6 +29,10 @@ function categoryStyle(category: ClothingItem['category']): React.CSSProperties 
       return { background: 'var(--sage-bg)', color: 'var(--sage)' };
     case 'bottom':
       return { background: 'var(--terra-bg)', color: 'var(--terra)' };
+    case 'outer':
+      return { background: 'var(--surface2)', color: 'var(--ink2)' };
+    case 'accessory':
+      return { background: 'var(--gold-soft)', color: 'var(--gold)' };
     case 'coordinate':
       return { background: 'var(--lav-bg)', color: 'var(--lav)' };
   }
@@ -175,19 +181,21 @@ export default function ClothingCard({ item, onDelete, onRename, selected, onCli
         </button>
       </div>
 
-      {/* Bottom sheet modal */}
+      {/* Centered modal */}
       {showModal && (
         <div
-          className="fixed inset-0 z-50 flex flex-col justify-end"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
           style={{ background: 'rgba(26,25,24,0.72)', backdropFilter: 'blur(4px)' }}
           onClick={() => setShowModal(false)}
         >
           <div
-            className="relative w-full max-w-sm mx-auto pb-8"
+            className="relative w-full max-w-sm mx-auto"
             style={{
               background: 'var(--surface)',
-              borderRadius: '28px 28px 0 0',
-              padding: '24px 20px 32px',
+              borderRadius: 28,
+              padding: '24px 20px 28px',
+              maxHeight: '80vh',
+              overflowY: 'auto',
             }}
             onClick={(e) => e.stopPropagation()}
           >
