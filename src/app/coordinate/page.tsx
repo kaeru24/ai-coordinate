@@ -284,29 +284,27 @@ const [wardrobeIds, setWardrobeIds] = useState<string[]>([]);
       </div>
 
       {/* Gender selector */}
-      <div className="flex flex-col gap-1.5">
-        <p className="text-[11px] font-semibold px-1" style={{ color: 'var(--ink3)' }}>
+      <div
+        className="flex rounded-xl p-1 gap-1"
+        style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
+      >
+        <p className="text-[11px] font-semibold self-center px-2" style={{ color: 'var(--ink3)' }}>
           マネキンを選ぶ
         </p>
-        <div
-          className="flex rounded-xl p-1 gap-1"
-          style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
-        >
-          {(['female', 'male'] as Gender[]).map((g) => (
-            <button
-              key={g}
-              onClick={() => setGender(g)}
-              className="flex-1 py-2 rounded-lg text-[12px] font-bold transition-all"
-              style={
-                gender === g
-                  ? { background: 'var(--ink)', color: 'var(--bg)' }
-                  : { background: 'transparent', color: 'var(--ink2)' }
-              }
-            >
-              {g === 'female' ? '女性' : '男性'}
-            </button>
-          ))}
-        </div>
+        {(['female', 'male'] as Gender[]).map((g) => (
+          <button
+            key={g}
+            onClick={() => setGender(g)}
+            className="flex-1 py-2 rounded-lg text-[12px] font-bold transition-all"
+            style={
+              gender === g
+                ? { background: 'var(--ink)', color: 'var(--bg)' }
+                : { background: 'transparent', color: 'var(--ink2)' }
+            }
+          >
+            {g === 'female' ? '女性' : '男性'}
+          </button>
+        ))}
       </div>
 
       {/* Mode tabs (underline style) */}
@@ -435,7 +433,7 @@ const [wardrobeIds, setWardrobeIds] = useState<string[]>([]);
                   className="rounded-xl p-3 text-xs text-center leading-relaxed"
                   style={{ background: 'var(--surface2)', color: 'var(--ink2)' }}
                 >
-                  ⚠️ 生成には時間がかかります。<br />
+                  生成には10秒ほど時間がかかります。<br />
                   完了するまでブラウザを閉じたり<br />
                   前のページに戻らないでください。
                 </div>
@@ -498,18 +496,68 @@ const [wardrobeIds, setWardrobeIds] = useState<string[]>([]);
                 </span>
               )}
             </p>
-            {allSelectableItems.length === 0
-              ? <p className="text-xs italic" style={{ color: 'var(--ink3)' }}>服が登録されていません</p>
-              : <div className="flex gap-2 flex-wrap">
-                  {allSelectableItems.map((item) => (
-                    <ItemThumb key={item.id} item={item}
-                      selected={wardrobeIds.includes(item.id)}
-                      disabled={atMaxWardrobe && !wardrobeIds.includes(item.id)}
-                      onSelect={() => toggleWardrobe(item.id)}
-                    />
-                  ))}
-                </div>
-            }
+            {allSelectableItems.length === 0 ? (
+              <p className="text-xs italic" style={{ color: 'var(--ink3)' }}>服が登録されていません</p>
+            ) : (
+              <div className="flex flex-col gap-3">
+                {tops.length > 0 && (
+                  <div>
+                    <p style={{ ...sectionLabelStyle, marginBottom: 6 }}>トップス</p>
+                    <div className="flex gap-2 overflow-x-auto pb-1">
+                      {tops.map((item) => (
+                        <ItemThumb key={item.id} item={item}
+                          selected={wardrobeIds.includes(item.id)}
+                          disabled={atMaxWardrobe && !wardrobeIds.includes(item.id)}
+                          onSelect={() => toggleWardrobe(item.id)}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {bottoms.length > 0 && (
+                  <div>
+                    <p style={{ ...sectionLabelStyle, marginBottom: 6 }}>ボトムス</p>
+                    <div className="flex gap-2 overflow-x-auto pb-1">
+                      {bottoms.map((item) => (
+                        <ItemThumb key={item.id} item={item}
+                          selected={wardrobeIds.includes(item.id)}
+                          disabled={atMaxWardrobe && !wardrobeIds.includes(item.id)}
+                          onSelect={() => toggleWardrobe(item.id)}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {outers.length > 0 && (
+                  <div>
+                    <p style={{ ...sectionLabelStyle, marginBottom: 6 }}>アウター</p>
+                    <div className="flex gap-2 overflow-x-auto pb-1">
+                      {outers.map((item) => (
+                        <ItemThumb key={item.id} item={item}
+                          selected={wardrobeIds.includes(item.id)}
+                          disabled={atMaxWardrobe && !wardrobeIds.includes(item.id)}
+                          onSelect={() => toggleWardrobe(item.id)}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {accessories.length > 0 && (
+                  <div>
+                    <p style={{ ...sectionLabelStyle, marginBottom: 6 }}>アクセサリー</p>
+                    <div className="flex gap-2 overflow-x-auto pb-1">
+                      {accessories.map((item) => (
+                        <ItemThumb key={item.id} item={item}
+                          selected={wardrobeIds.includes(item.id)}
+                          disabled={atMaxWardrobe && !wardrobeIds.includes(item.id)}
+                          onSelect={() => toggleWardrobe(item.id)}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           <div style={cardStyle}>
@@ -553,7 +601,7 @@ const [wardrobeIds, setWardrobeIds] = useState<string[]>([]);
                   className="rounded-xl p-3 text-xs text-center leading-relaxed"
                   style={{ background: 'var(--surface2)', color: 'var(--ink2)' }}
                 >
-                  ⚠️ 生成には時間がかかります。<br />
+                  生成には10秒ほど時間がかかります。<br />
                   完了するまでブラウザを閉じたり<br />
                   前のページに戻らないでください。
                 </div>

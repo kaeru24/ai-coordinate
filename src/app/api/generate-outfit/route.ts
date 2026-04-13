@@ -23,6 +23,8 @@ export async function POST(req: NextRequest) {
 
   let tops: GarmentInput[];
   let bottoms: GarmentInput[];
+  let outers: GarmentInput[];
+  let accessories: GarmentInput[];
   let wardrobe: GarmentInput[];
   let gender: "male" | "female";
   let variationIndex: number;
@@ -31,6 +33,8 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     tops = body.tops ?? [];
     bottoms = body.bottoms ?? [];
+    outers = body.outers ?? [];
+    accessories = body.accessories ?? [];
     wardrobe = body.wardrobe ?? [];
     gender = body.gender === "female" ? "female" : "male";
     variationIndex = typeof body.variationIndex === "number" ? body.variationIndex : 0;
@@ -51,7 +55,7 @@ export async function POST(req: NextRequest) {
     const ai = new GoogleGenAI({ apiKey });
     const contents = isMultiMode
       ? buildMultiContents(wardrobe, gender, variationIndex)
-      : buildSingleContents(tops, bottoms, gender);
+      : buildSingleContents(tops, bottoms, outers, accessories, gender);
 
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash-image",
@@ -79,12 +83,12 @@ export async function POST(req: NextRequest) {
 }
 
 function mannequinDesc(gender: "male" | "female") {
-  return `${gender} fashion mannequin from neck down, standing upright in a confident pose with arms at sides`;
+  return `${gender} fashion mannequin, full body from head to toe, standing upright with feet shoulder-width apart and arms straight down at sides`;
 }
 
 const BACKGROUND = "Pure white background.";
 
-function buildSingleContents(tops: GarmentInput[], bottoms: GarmentInput[], gender: "male" | "female") {
+function buildSingleContents(tops: GarmentInput[], bottoms: GarmentInput[], outers: GarmentInput[], accessories: GarmentInput[], gender: "male" | "female") {
   const parts: object[] = [];
 
   tops.forEach((item, i) => {
@@ -101,22 +105,46 @@ function buildSingleContents(tops: GarmentInput[], bottoms: GarmentInput[], gend
     }
   });
 
+  outers.forEach((item, i) => {
+    parts.push({ text: `Outer garment ${i + 1}${item.name ? ` (${item.name})` : ""}:` });
+    if (item.image && item.mimeType) {
+      parts.push({ inlineData: { data: item.image, mimeType: item.mimeType } });
+    }
+  });
+
+  accessories.forEach((item, i) => {
+    parts.push({ text: `Accessory ${i + 1}${item.name ? ` (${item.name})` : ""}:` });
+    if (item.image && item.mimeType) {
+      parts.push({ inlineData: { data: item.image, mimeType: item.mimeType } });
+    }
+  });
+
   const topDesc =
     tops.length > 1
-      ? tops.map((t) => t.name || "top").join(" layered over ")
+      ? tops.map((t) => t.name || "top").join(" layered under ")
       : tops[0]?.name || "the top garment";
   const bottomDesc =
     bottoms.length > 1
-      ? bottoms.map((b) => b.name || "bottom").join(" layered over ")
+      ? bottoms.map((b) => b.name || "bottom").join(" layered under ")
       : bottoms[0]?.name || "the bottom garment";
+  const outerDesc = outers.length > 0
+    ? `, with ${outers.map((o) => o.name || "outer").join(" layered over ")} on top`
+    : "";
+  const accessoryDesc = accessories.length > 0
+    ? `, accessorized with ${accessories.map((a) => a.name || "accessory").join(" and ")}`
+    : "";
 
+  const layeringRule = `CRITICAL RULE: Do NOT blend, merge, or combine the designs of separate garments into one. Each garment must remain visually distinct and recognizable as a separate piece. When multiple tops are provided, show the innermost one first and layer each subsequent one physically on top — both must be visible as distinct items of clothing (e.g. a t-shirt visible underneath an open overshirt).`;
+
+  const allItems = [...tops, ...bottoms, ...outers, ...accessories];
   let instruction = "";
-  if (tops.length > 0 && bottoms.length > 0) {
-    instruction = `Generate a high quality fashion photo of a ${mannequinDesc(gender)} wearing ${topDesc} on top and ${bottomDesc} on the bottom. If multiple garments are provided for the same body part, show them layered. Use the exact garments shown in the reference images above. ${BACKGROUND}`;
-  } else if (tops.length > 0) {
-    instruction = `Generate a high quality fashion photo of a ${mannequinDesc(gender)} wearing ${topDesc}. Use the exact garment shown above. ${BACKGROUND}`;
-  } else {
-    instruction = `Generate a high quality fashion photo of a ${mannequinDesc(gender)} wearing ${bottomDesc}. Use the exact garment shown above. ${BACKGROUND}`;
+  if (allItems.length > 0) {
+    const wearingParts: string[] = [];
+    if (tops.length > 0) wearingParts.push(`${topDesc} as top`);
+    if (bottoms.length > 0) wearingParts.push(`${bottomDesc} as bottom`);
+    if (outers.length > 0) wearingParts.push(outerDesc.replace(", with ", "").replace(" on top", "") + " as outer layer");
+    if (accessories.length > 0) wearingParts.push(accessoryDesc.replace(", accessorized with ", "") + " as accessories");
+    instruction = `Generate a high quality fashion photo of a ${mannequinDesc(gender)} wearing ${wearingParts.join(", ")}${outerDesc}${accessoryDesc}. Reproduce each garment exactly as shown in the reference images above. ${layeringRule} ${BACKGROUND}`;
   }
 
   parts.push({ text: instruction });
@@ -140,6 +168,7 @@ function buildMultiContents(wardrobe: GarmentInput[], gender: "male" | "female",
     text:
       `From the wardrobe items shown above, select the best combination for a "${style}" outfit. ` +
       `Generate a high quality fashion photo of a ${mannequinDesc(gender)} wearing your chosen outfit combination. ` +
+      `Do NOT blend or merge garment designs — each selected piece must remain visually distinct. ` +
       `${BACKGROUND}`,
   });
 
