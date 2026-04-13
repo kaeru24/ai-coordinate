@@ -289,7 +289,7 @@ const [wardrobeIds, setWardrobeIds] = useState<string[]>([]);
         style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
       >
         <p className="text-[11px] font-semibold self-center px-2" style={{ color: 'var(--ink3)' }}>
-          マネキンを選ぶ
+          マネキン
         </p>
         {(['female', 'male'] as Gender[]).map((g) => (
           <button
