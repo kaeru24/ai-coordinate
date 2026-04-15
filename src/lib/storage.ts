@@ -5,7 +5,14 @@ export function getItems(): ClothingItem[] {
   if (typeof window === 'undefined') return [];
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? (JSON.parse(raw) as ClothingItem[]) : [];
+    const items = raw ? (JSON.parse(raw) as ClothingItem[]) : [];
+    // 重複IDを除去（先に出現した方を優先）
+    const seen = new Set<string>();
+    return items.filter((i) => {
+      if (seen.has(i.id)) return false;
+      seen.add(i.id);
+      return true;
+    });
   } catch {
     return [];
   }
@@ -18,6 +25,7 @@ export function saveItems(items: ClothingItem[]): void {
 
 export function addItem(item: ClothingItem): void {
   const items = getItems();
+  if (items.some((i) => i.id === item.id)) return;
   items.unshift(item);
   saveItems(items);
 }

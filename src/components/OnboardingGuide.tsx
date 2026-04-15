@@ -6,13 +6,13 @@ import { ONBOARDING_KEY } from '@/lib/constants';
 const STEPS = [
   {
     icon: '🪡',
-    title: 'MyClosetへようこそ',
+    title: 'コーデAIへようこそ',
     description: 'あなたのクローゼットをデジタルで管理し、AIがコーデを提案してくれるアプリです。',
   },
   {
     icon: '📷',
     title: '服を登録する',
-    description: 'トップス・ボトムス・アウター・アクセサリーの写真を撮って登録します。クローゼットにアイテムが増えるほど、コーデの幅が広がります。',
+    description: 'トップス・ボトムス・アウターの写真を撮って登録します。クローゼットにアイテムが増えるほど、コーデの幅が広がります。',
   },
   {
     icon: '🪞',

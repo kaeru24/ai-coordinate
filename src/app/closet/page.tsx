@@ -25,8 +25,6 @@ function chipStyle(value: Filter, active: Filter): React.CSSProperties {
       return { background: 'var(--terra-bg)', color: 'var(--terra)', border: '1.5px solid var(--terra)' };
     case 'outer':
       return { background: 'var(--surface2)', color: 'var(--ink2)', border: '1.5px solid var(--ink2)' };
-    case 'accessory':
-      return { background: 'var(--gold-soft)', color: 'var(--gold)', border: '1.5px solid var(--gold)' };
     case 'coordinate':
       return { background: 'var(--lav-bg)', color: 'var(--lav)', border: '1.5px solid var(--lav)' };
   }
@@ -39,7 +37,7 @@ export default function ClosetPage() {
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
       const f = params.get('filter') as Filter | null;
-      if (f && ['all','top','bottom','outer','accessory','coordinate'].includes(f)) return f;
+      if (f && ['all','top','bottom','outer','coordinate'].includes(f)) return f;
     }
     return 'all';
   });
@@ -48,7 +46,7 @@ export default function ClosetPage() {
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
       const f = params.get('filter') as Filter | null;
-      if (f && ['all','top','bottom','outer','accessory','coordinate'].includes(f)) setFilter(f);
+      if (f && ['all','top','bottom','outer','coordinate'].includes(f)) setFilter(f);
     }
   }, []);
 
@@ -58,9 +56,8 @@ export default function ClosetPage() {
     { value: 'all', label: 'すべて' },
     { value: 'coordinate', label: 'コーデ' },
     { value: 'top', label: 'トップス' },
-    { value: 'bottom', label: 'ボトムス' },
     { value: 'outer', label: 'アウター' },
-    { value: 'accessory', label: 'アクセサリー' },
+    { value: 'bottom', label: 'ボトムス' },
   ];
 
   return (

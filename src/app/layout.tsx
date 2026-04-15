@@ -3,8 +3,8 @@ import './globals.css';
 import Navigation from '@/components/Navigation';
 
 export const metadata: Metadata = {
-  title: 'MyCloset',
-  description: '着せ替えコーデアプリ',
+  title: 'コーデAI',
+  description: 'AIがコーデ画像を生成するアプリ',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

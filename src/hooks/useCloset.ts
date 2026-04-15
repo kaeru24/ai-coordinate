@@ -45,7 +45,5 @@ export function useCloset() {
   const tops = useMemo(() => items.filter((i) => i.category === 'top'), [items]);
   const bottoms = useMemo(() => items.filter((i) => i.category === 'bottom'), [items]);
   const outers = useMemo(() => items.filter((i) => i.category === 'outer'), [items]);
-  const accessories = useMemo(() => items.filter((i) => i.category === 'accessory'), [items]);
-
-  return { items, tops, bottoms, outers, accessories, add, remove, rename };
+  return { items, tops, bottoms, outers, add, remove, rename };
 }

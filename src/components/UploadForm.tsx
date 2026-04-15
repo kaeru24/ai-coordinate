@@ -426,7 +426,7 @@ export default function UploadForm({ onSubmit }: Props) {
             カテゴリ
           </p>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-            {(['top', 'bottom', 'outer', 'accessory'] as const).map((cat) => (
+            {(['top', 'outer', 'bottom'] as const).map((cat) => (
               <button
                 key={cat}
                 type="button"
@@ -452,12 +452,11 @@ export default function UploadForm({ onSubmit }: Props) {
   );
 }
 
-function catLabel(cat: 'top' | 'bottom' | 'outer' | 'accessory'): string {
+function catLabel(cat: 'top' | 'bottom' | 'outer'): string {
   switch (cat) {
     case 'top': return 'トップス';
     case 'bottom': return 'ボトムス';
     case 'outer': return 'アウター';
-    case 'accessory': return 'アクセサリー';
   }
 }
 
@@ -478,12 +477,11 @@ function btnPrimary(disabled: boolean): React.CSSProperties {
   };
 }
 
-function catBtn(active: boolean, type: 'top' | 'bottom' | 'outer' | 'accessory'): React.CSSProperties {
+function catBtn(active: boolean, type: 'top' | 'bottom' | 'outer'): React.CSSProperties {
   const colors: Record<string, { bg: string; color: string; border: string }> = {
-    top:       { bg: 'var(--sage-bg)',   color: 'var(--sage)',   border: 'var(--sage)' },
-    bottom:    { bg: 'var(--terra-bg)',  color: 'var(--terra)',  border: 'var(--terra)' },
-    outer:     { bg: 'var(--surface2)',  color: 'var(--ink2)',   border: 'var(--ink2)' },
-    accessory: { bg: 'var(--gold-soft)', color: 'var(--gold)',   border: 'var(--gold)' },
+    top:    { bg: 'var(--sage-bg)',  color: 'var(--sage)',  border: 'var(--sage)' },
+    bottom: { bg: 'var(--terra-bg)', color: 'var(--terra)', border: 'var(--terra)' },
+    outer:  { bg: 'var(--surface2)', color: 'var(--ink2)',  border: 'var(--ink2)' },
   };
   if (active) {
     const c = colors[type];

@@ -43,7 +43,7 @@ export default function HomePage() {
             className="text-[26px] font-black leading-none"
             style={{ letterSpacing: '-0.04em', color: 'var(--ink)' }}
           >
-            MyCloset
+            コーデAI
           </h1>
         </div>
         <p className="text-[12px]" style={{ color: 'var(--ink3)', marginLeft: 52 }}>

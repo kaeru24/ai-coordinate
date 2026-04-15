@@ -18,7 +18,6 @@ function categoryLabel(category: ClothingItem['category']) {
     case 'top': return 'トップス';
     case 'bottom': return 'ボトムス';
     case 'outer': return 'アウター';
-    case 'accessory': return 'アクセサリー';
     case 'coordinate': return 'コーデ';
   }
 }
